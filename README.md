@@ -6,8 +6,3 @@ Implementation of a **Fuzzy Bayesian Network** for analyzing lung cancer gene ex
 - [NCBI GEO: GSE32867](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE32867)  
 
 Alternatively, data are available in the `data/` folder.
-
-## Requirements
-
-```bash
-pip install -r requirements.txt
