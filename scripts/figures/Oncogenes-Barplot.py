@@ -97,13 +97,12 @@ axes = axes.ravel()
 
 for i, ax in enumerate(axes):
 
-    # ---- Original lines ----
     ax.plot(normal_tissue[:, i], label="Normal Tissue",
             color="tab:blue", alpha=0.4)
     ax.plot(tumor_tissue[:, i], label="Tumor Tissue",
             color="tab:red", alpha=0.3)
 
-    # ---- Compute mean & std for each tissue ----
+    # Mean and STD
     normal_mean = np.mean(normal_tissue[:, i])
     normal_std  = np.std(normal_tissue[:, i])
 
@@ -112,21 +111,19 @@ for i, ax in enumerate(axes):
 
     x = np.arange(len(normal_tissue[:, i]))
 
-    # ---- Plot mean line ----
     ax.axhline(normal_mean, color="tab:blue", linestyle=":",
                linewidth=3, alpha=1, label="Normal Mean")
     ax.axhline(tumor_mean, color="tab:red", linestyle=":",
                linewidth=3, alpha=1, label="Tumor Mean")
 
-    # ---- Labels, title, formatting ----
     ax.set_title(titles[i])
     ax.set_xlabel(xlabels[i])
     ax.set_ylabel(ylabels[i])
     ax.grid(True, linestyle=':', alpha=0.6)
 
-# Avoid duplicated legend on every panel — put one global legend
 handles, labels = axes[0].get_legend_handles_labels()
 fig.legend(handles, labels, loc='upper center', ncol=4, fontsize=14, frameon=False)
 
 plt.tight_layout(rect=[0, 0, 1, 0.95])
 plt.show()
+
