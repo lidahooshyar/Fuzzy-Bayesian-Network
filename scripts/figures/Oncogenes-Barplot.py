@@ -1,6 +1,19 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+plt.rcParams.update({
+    'font.size': 16,
+    'axes.titlesize': 16,
+    'axes.labelsize': 16,
+    'xtick.labelsize': 16,
+    'ytick.labelsize': 16,
+    'legend.fontsize': 16,
+    'lines.linewidth': 2,
+    'font.family': 'sans-serif',
+    'font.sans-serif': ['Arial', 'Liberation Sans', 'Bitstream Vera Sans', 'sans-serif'],
+})
+
+
 membership = np.array([
     [0.8315, 0.0275, 0.1042, 0.0368], [0.0375, 0.0312, 0.0573, 0.8739],
     [0.2857, 0.0732, 0.4325, 0.2087], [0.2164, 0.0467, 0.6672, 0.0697],
@@ -62,33 +75,58 @@ membership = np.array([
     [0.8735, 0.0215, 0.0653, 0.0396], [0.9763, 0.0036, 0.0144, 0.0057]
 ])
 
+normal_tissue = membership[::2]  # Even indices
+tumor_tissue  = membership[1::2] # Odd indices
 
-labels = np.array([0,1]*58)
+num_points = min(len(normal_tissue), len(tumor_tissue))
+normal_tissue = normal_tissue[:num_points]
+tumor_tissue  = tumor_tissue[:num_points]
 
-samples = np.arange(1, 117)
-clusters_colors = ['red', 'green', 'blue', 'orange']
+titles = [
+    "(a) Hypo + Low Expression",
+    "(b) Hypo + High Expression",
+    "(c) Hyper + Low Expression",
+    "(d) Hyper + High Expression"
+]
 
-fig, ax = plt.subplots(figsize=(20, 8))
-bottom = np.zeros(len(membership))
+xlabels = ["Sample number"] * 4
+ylabels = ["$\mu_{A}(x)$"] * 4
 
-for i in range(4):
-    ax.bar(samples, membership[:, i], bottom=bottom, color=clusters_colors[i], label=f'Cluster {i+1}')
-    bottom += membership[:, i]
+fig, axes = plt.subplots(2, 2, figsize=(12, 8))
+axes = axes.ravel()
 
-for i, label in enumerate(labels):
-    if label == 0:
-        ax.axvspan(i+0.5, i+1.5, color='lightblue', alpha=0.2)
-    else:
-        ax.axvspan(i+0.5, i+1.5, color='lightcoral', alpha=0.2)
+for i, ax in enumerate(axes):
 
-ax.set_xlabel("Sample number", fontsize=18)
-ax.set_ylabel("Membership degree", fontsize=18)
-ax.legend(fontsize=16, loc='upper left')
-ax.set_xticks(np.arange(0, 117, 10))
-ax.set_ylim(0, 1.05)
-plt.xticks(fontsize=18)
-plt.yticks(fontsize=18)
-plt.grid(True, axis='y')
-#plt.title("Fuzzy Membership Degrees per Sample (Bar Plot)", fontsize=20)
-plt.tight_layout(pad=4.0)
+    # ---- Original lines ----
+    ax.plot(normal_tissue[:, i], label="Normal Tissue",
+            color="tab:blue", alpha=0.4)
+    ax.plot(tumor_tissue[:, i], label="Tumor Tissue",
+            color="tab:red", alpha=0.3)
+
+    # ---- Compute mean & std for each tissue ----
+    normal_mean = np.mean(normal_tissue[:, i])
+    normal_std  = np.std(normal_tissue[:, i])
+
+    tumor_mean  = np.mean(tumor_tissue[:, i])
+    tumor_std   = np.std(tumor_tissue[:, i])
+
+    x = np.arange(len(normal_tissue[:, i]))
+
+    # ---- Plot mean line ----
+    ax.axhline(normal_mean, color="tab:blue", linestyle=":",
+               linewidth=3, alpha=1, label="Normal Mean")
+    ax.axhline(tumor_mean, color="tab:red", linestyle=":",
+               linewidth=3, alpha=1, label="Tumor Mean")
+
+    # ---- Labels, title, formatting ----
+    ax.set_title(titles[i])
+    ax.set_xlabel(xlabels[i])
+    ax.set_ylabel(ylabels[i])
+    ax.grid(True, linestyle=':', alpha=0.6)
+
+# Avoid duplicated legend on every panel — put one global legend
+handles, labels = axes[0].get_legend_handles_labels()
+fig.legend(handles, labels, loc='upper center', ncol=4, fontsize=14, frameon=False)
+
+plt.tight_layout(rect=[0, 0, 1, 0.95])
 plt.show()
