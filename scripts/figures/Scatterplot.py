@@ -117,34 +117,67 @@ risk_matrix = np.array([
     [0.278, 0.356, 0.366]
 ])
 
-# Normalize rows so they sum to 1
+plt.style.use("seaborn-v0_8-whitegrid")   # clean modern style
+plt.rcParams.update({
+    'font.size': 16,
+    'axes.titlesize': 16,
+    'axes.labelsize': 16,
+    'xtick.labelsize': 16,
+    'ytick.labelsize': 16,
+    'legend.fontsize': 16,
+    'lines.linewidth': 2,
+    'font.family': 'sans-serif',
+    'font.sans-serif': ['Arial', 'Liberation Sans', 'Bitstream Vera Sans', 'sans-serif'],
+})
+
+colors = ["tab:green", "tab:blue", "tab:red"]   # green, blue, red
+risk_labels = ["Low", "Medium", "High"]
+
 risk_matrix = risk_matrix / risk_matrix.sum(axis=1, keepdims=True)
+normal_tissue = risk_matrix[::2]
+tumor_tissue = risk_matrix[1::2]
 
-samples = np.arange(1, risk_matrix.shape[0] + 1)
+num_points = min(len(normal_tissue), len(tumor_tissue))
+normal_tissue = normal_tissue[:num_points]
+tumor_tissue = tumor_tissue[:num_points]
 
-plt.rcParams.update({'font.size': 18})
+samples_tumor = np.arange(1, tumor_tissue.shape[0] + 1)
+samples_normal = np.arange(1, normal_tissue.shape[0] + 1)
 
-plt.figure(figsize=(16,6))
 
-# Background: Odd = Normal, Even = Tumor
-for i in range(risk_matrix.shape[0]):
-    if i % 2 == 0:  
-        plt.axvspan(i + 0.5, i + 1.5, color='lightgreen', alpha=0.1)
-    else:           # sample 2,4,6,... Tumor
-        plt.axvspan(i + 0.5, i + 1.5, color='lightcoral', alpha=0.1)
+fig, axes = plt.subplots(1, 2, figsize=(15, 5), sharey=True)
 
-plt.scatter(samples, risk_matrix[:,0], color='green', label='Low risk', marker='o')
-plt.scatter(samples, risk_matrix[:,1], color='blue', label='Medium risk', marker='o')
-plt.scatter(samples, risk_matrix[:,2], color='red', label='High risk', marker='o')
+def p_scatter(ax, data, sample_idx, title):
+    for j in range(data.shape[1]):
+        ax.scatter(
+            sample_idx, data[:, j],
+            label=f"{risk_labels[j]}",
+            color=colors[j],
+            s=20,
+            alpha=0.5,
+            edgecolor="white",
+            linewidth=0.6
+        )
 
-plt.xlabel("Sample number", fontsize=18)
-plt.ylabel("Risk probability", fontsize=18)
-plt.xticks(fontsize=18)
-plt.yticks(fontsize=18)
+        # Mean line
+        mean_val = data[:, j].mean()
+        ax.axhline(
+            mean_val,
+            color=colors[j],
+            linestyle="--",
+            linewidth=2
+        )
 
-plt.legend(loc='upper left', fontsize=18)
+    ax.set_title(title)
+    ax.set_xlabel("Sample Number")
+    ax.grid(True, linestyle=":", alpha=0.6)
+    ax.legend(loc="upper right", frameon=False, fontsize=14)
 
-plt.xlim(0, risk_matrix.shape[0]+1)
-plt.ylim(0, 1)
+
+p_scatter(axes[0], tumor_tissue, samples_tumor, "(a)")
+axes[0].set_ylabel("Risk Value")
+
+p_scatter(axes[1], normal_tissue, samples_normal, "(b)")
+
 plt.tight_layout()
 plt.show()
