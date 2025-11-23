@@ -13,6 +13,7 @@ plt.rcParams.update({
     'font.sans-serif': ['Arial', 'Liberation Sans', 'Bitstream Vera Sans', 'sans-serif'],
 })
 
+
 membership = np.array([
     [0.0321, 0.6698, 0.2842, 0.0139],   # Sample 1 (Normal)
     [0.2201, 0.0487, 0.0852, 0.6460],   # Sample 2 (Tumor)
@@ -138,10 +139,10 @@ normal_tissue = normal_tissue[:num_points]
 tumor_tissue  = tumor_tissue[:num_points]
 
 titles = [
-    "(a) Hypo + Low Expression",
-    "(b) Hypo + High Expression",
-    "(c) Hyper + Low Expression",
-    "(d) Hyper + High Expression"
+    "(a) Hypo + Low expression",
+    "(b) Hypo + High expression",
+    "(c) Hyper + Low expression",
+    "(d) Hyper + High expression"
 ]
 
 xlabels = ["Sample number"] * 4
@@ -213,4 +214,5 @@ fig.legend(
 )
 
 plt.tight_layout(rect=[0, 0, 1, 0.95])
+
 plt.show()
