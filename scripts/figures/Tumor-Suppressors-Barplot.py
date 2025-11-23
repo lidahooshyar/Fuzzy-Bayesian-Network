@@ -1,3 +1,6 @@
+from matplotlib import pyplot as plt
+import numpy as np
+
 plt.rcParams.update({
     'font.size': 16,
     'axes.titlesize': 16,
@@ -9,7 +12,6 @@ plt.rcParams.update({
     'font.family': 'sans-serif',
     'font.sans-serif': ['Arial', 'Liberation Sans', 'Bitstream Vera Sans', 'sans-serif'],
 })
-
 
 membership = np.array([
     [0.0321, 0.6698, 0.2842, 0.0139],   # Sample 1 (Normal)
@@ -150,33 +152,65 @@ axes = axes.ravel()
 
 for i, ax in enumerate(axes):
 
-    ax.plot(normal_tissue[:, i], label="Normal Tissue",
-            color="tab:blue", alpha=0.4)
-    ax.plot(tumor_tissue[:, i], label="Tumor Tissue",
-            color="tab:red", alpha=0.3)
+    x_normal = np.arange(len(normal_tissue[:, i]))
+    x_tumor  = np.arange(len(tumor_tissue[:, i]))
+
+    ax.scatter(
+        x_normal,
+        normal_tissue[:, i],
+        label="Normal tissue",
+        color="tab:blue",
+        alpha=0.4,
+        s=20,
+        zorder=3
+    )
+
+    ax.scatter(
+        x_tumor,
+        tumor_tissue[:, i],
+        label="Tumor tissue",
+        color="tab:red",
+        alpha=0.3,
+        s=20,
+        zorder=3
+    )
 
     # Mean and STD
     normal_mean = np.mean(normal_tissue[:, i])
     normal_std  = np.std(normal_tissue[:, i])
-
     tumor_mean  = np.mean(tumor_tissue[:, i])
     tumor_std   = np.std(tumor_tissue[:, i])
 
-    x = np.arange(len(normal_tissue[:, i]))
-
-    # Plot Mean
     ax.axhline(normal_mean, color="tab:blue", linestyle=":",
-               linewidth=3, alpha=1, label="Normal Mean")
+               linewidth=3, alpha=1, label="Normal mean", zorder=2)
     ax.axhline(tumor_mean, color="tab:red", linestyle=":",
-               linewidth=3, alpha=1, label="Tumor Mean")
+               linewidth=3, alpha=1, label="Tumor mean", zorder=2)
     
     ax.set_title(titles[i])
     ax.set_xlabel(xlabels[i])
     ax.set_ylabel(ylabels[i])
     ax.grid(True, linestyle=':', alpha=0.6)
 
-handles, labels = axes[0].get_legend_handles_labels()
-fig.legend(handles, labels, loc='upper center', ncol=4, fontsize=14, frameon=False)
+
+handles, labels = [], []
+for ax in axes:
+    h, l = ax.get_legend_handles_labels()
+    handles.extend(h)
+    labels.extend(l)
+
+uniq = dict(zip(labels, handles))
+
+fig.subplots_adjust(
+    left=0.07, right=0.98,
+    bottom=0.08, top=0.86,   # top space for legend
+    wspace=0.25, hspace=0.35 # spacing between panels
+)
+
+fig.legend(
+    uniq.values(), uniq.keys(),
+    loc='upper center',
+    ncol=4, fontsize=14, frameon=False
+)
 
 plt.tight_layout(rect=[0, 0, 1, 0.95])
 plt.show()
