@@ -131,7 +131,7 @@ plt.rcParams.update({
 })
 
 colors = ["tab:green", "tab:blue", "tab:red"]   # green, blue, red
-risk_labels = ["Low risk", "Medium risk", "High risk"]
+risk_labels = ["Low-risk", "Medium-risk", "High-risk"]
 
 risk_matrix = risk_matrix / risk_matrix.sum(axis=1, keepdims=True)
 normal_tissue = risk_matrix[::2]
@@ -174,11 +174,12 @@ def p_scatter(ax, data, sample_idx, title):
     ax.legend(loc="upper right", frameon=False, fontsize=14)
 
 
-p_scatter(axes[0], tumor_tissue, samples_tumor, "(a)")
+p_scatter(axes[0], tumor_tissue, samples_tumor, "(a) Tumour tissue")
 axes[0].set_ylabel("Risk value")
 
-p_scatter(axes[1], normal_tissue, samples_normal, "(b)")
+p_scatter(axes[1], normal_tissue, samples_normal, "(b) Normal tissue")
 
 plt.tight_layout()
 plt.show()
+
 
